@@ -6,14 +6,13 @@ from multiprocessing.pool import ThreadPool
 version_sets = ["BR1", "EUN1", "EUW1", "JP1", "KR", "LA1", "LA2", "NA1", "OC1", "PBE1", "RU", "TR1"]
 
 def update_versions(region):
-    url = f"https://sieve.services.riotcdn.net/api/v0/products/lol/version-sets/{region}"
-    releases = requests.get(url)
-    releases.raise_for_status()
+    for OS in ["android", "ios", "macos", "windows"]:
+        url = f"https://sieve.services.riotcdn.net/api/v1/products/lol/version-sets/{region}?q[platform]={OS}"
+        releases = requests.get(url)
+        releases.raise_for_status()
 
-    for release in json.loads(releases.content)["releases"]:
-        for OS in release["release"]["labels"]["riot:platform"]["values"]:
-            artifact_type_id = release["release"]["labels"]["riot:artifact_type_id"]["values"][0]
-            path = f'{"LoL" if OS == "macos" or OS == "windows" else "TFT"}/{region}/{OS}/{"client-content" if "client-content" in artifact_type_id else "client" if "standalone-client" in artifact_type_id else "game"}'
+        for release in json.loads(releases.content)["releases"]:
+            path = f'{"LoL" if OS == "macos" or OS == "windows" else "TFT"}/{region}/{OS}/{release["release"]["labels"]["riot:artifact_type_id"]["values"][0]}'
             os.makedirs(path, exist_ok=True)
             try:
                 with open(f'{path}/{release["release"]["labels"]["riot:artifact_version_id"]["values"][0].split("+")[0]}.txt', "x") as out_file:
