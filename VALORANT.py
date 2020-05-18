@@ -10,7 +10,7 @@ if (len(sys.argv) < 3):
 
 entitlements_token, bearer = get_tokens(sys.argv[1], sys.argv[2])
 
-player_json = requests.get("https://clientconfig.rpg.riotgames.com/api/v1/config/player?os=windows&region=EUW&app=Riot%20Client&version=99.0.0.9999999&patchline=KeystoneFoundationLiveWin", headers={"X-Riot-Entitlements-JWT": entitlements_token, "Authorization": f"Bearer {bearer}"})
+player_json = requests.get("https://clientconfig.rpg.riotgames.com/api/v1/config/player?os=windows&region=EUW&app=Riot%20Client&version=99.0.0.9999999&patchline=KeystoneFoundationLiveWin", headers={"X-Riot-Entitlements-JWT": entitlements_token, "Authorization": f"Bearer {bearer}"}, timeout=10)
 
 for configuration in json.loads(player_json.content)["keystone.products.valorant.patchlines.live"]["platforms"]["win"]["configurations"]:
     patch_url = configuration["patch_url"]

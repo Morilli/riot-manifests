@@ -8,7 +8,7 @@ version_sets = ["BR1", "EUN1", "EUW1", "JP1", "KR", "LA1", "LA2", "NA1", "OC1", 
 def update_versions(region):
     for OS in ["android", "ios", "macos", "windows"]:
         url = f"https://sieve.services.riotcdn.net/api/v1/products/lol/version-sets/{region}?q[platform]={OS}"
-        releases = requests.get(url)
+        releases = requests.get(url, timeout=10)
         releases.raise_for_status()
 
         for release in json.loads(releases.content)["releases"]:

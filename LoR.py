@@ -7,7 +7,7 @@ from multiprocessing.pool import ThreadPool
 import subprocess
 import shutil
 
-public_json = requests.get("https://clientconfig.rpg.riotgames.com/api/v1/config/public")
+public_json = requests.get("https://clientconfig.rpg.riotgames.com/api/v1/config/public", timeout=10)
 public_json.raise_for_status()
 version = json.loads(public_json.content)["keystone.products.bacon.patchlines.live"]["platforms"]["win"]["configurations"][0]["version"]
 url = json.loads(public_json.content)["keystone.products.bacon.patchlines.live"]["platforms"]["win"]["configurations"][0]["patch_url"]
@@ -31,7 +31,7 @@ entitlements_token, bearer = get_tokens(sys.argv[1], sys.argv[2])
 
 def get_json(region):
     url = f"https://fe-{region}.b.pvp.net/dataservice/v1/platform/win/patchline-ref/live/client-hash/{clienthash}/client-remote-config"
-    json_file = requests.get(url, headers={"X-Riot-Entitlements-JWT": entitlements_token, "Authorization": f"Bearer {bearer}"})
+    json_file = requests.get(url, headers={"X-Riot-Entitlements-JWT": entitlements_token, "Authorization": f"Bearer {bearer}"}, timeout=10)
     json_file.raise_for_status()
     version = json.loads(json_file.content)["PatchlineRefBuildId"]
     os.makedirs(f"LoR/{region}", exist_ok=True)

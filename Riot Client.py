@@ -6,8 +6,7 @@ from multiprocessing.pool import ThreadPool
 patchlines = ["KeystoneFoundationLiveWin", "KeystoneFoundationBetaWin"]
 
 def download_jsons(patchline):
-    url = f"https://clientconfig.rpg.riotgames.com/api/v1/config/public?version=99.0.0.9999999&patchline={patchline}&app=Riot Client&namespace=keystone.self_update"
-    json_file = requests.get(url)
+    json_file = requests.get(f"https://clientconfig.rpg.riotgames.com/api/v1/config/public?version=99.0.0.9999999&patchline={patchline}&app=Riot Client&namespace=keystone.self_update", timeout=10)
     json_file.raise_for_status()
 
     level = json.loads(json_file.content)["keystone.self_update.level"]
