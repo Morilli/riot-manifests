@@ -7,6 +7,7 @@ def get_tokens(username, password) -> (str, str):
 
     post_payload = {
         "client_id": "riot-client",
+        "nonce": "none",
         "response_type": "token id_token",
         "redirect_uri": "http://localhost/redirect",
     }
