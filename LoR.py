@@ -7,7 +7,7 @@ from multiprocessing.pool import ThreadPool
 import subprocess
 import shutil
 
-public_json = requests.get("https://clientconfig.rpg.riotgames.com/api/v1/config/public", timeout=10)
+public_json = requests.get("https://clientconfig.rpg.riotgames.com/api/v1/config/public?namespace=keystone.products.bacon.patchlines", timeout=10)
 public_json.raise_for_status()
 version = json.loads(public_json.content)["keystone.products.bacon.patchlines.live"]["platforms"]["win"]["configurations"][0]["version"]
 url = json.loads(public_json.content)["keystone.products.bacon.patchlines.live"]["platforms"]["win"]["configurations"][0]["patch_url"]
@@ -21,10 +21,10 @@ if (len(sys.argv) < 3):
     print("Error: Provide username and password in call.")
     exit(1)
 
-subprocess.run(["./ManifestDownloader.exe", url, "-b", "https://bacon.secure.dyn.riotcdn.net/channels/public/bundles", "-f", "LoR_Data/StreamingAssets/ClientInternalConfig.json", "-o", "temp"])
-with open("temp/LoR_Data/StreamingAssets/ClientInternalConfig.json", "r") as in_file:
+subprocess.run(["./ManifestDownloader.exe", url, "-b", "https://bacon.secure.dyn.riotcdn.net/channels/public/bundles", "-f", "LoR_Data/StreamingAssets/ClientInternalConfig.json", "-o", "LoR/temp"])
+with open("LoR/temp/LoR_Data/StreamingAssets/ClientInternalConfig.json", "r") as in_file:
     clienthash = json.loads(in_file.read())["clientHash"]
-shutil.rmtree("temp")
+shutil.rmtree("LoR/temp")
 
 regions = ["americas", "asia", "europe", "sea"]
 entitlements_token, bearer = get_tokens(sys.argv[1], sys.argv[2])
