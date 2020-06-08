@@ -1,4 +1,4 @@
-from login import get_tokens
+from login import get_lor_tokens
 import sys
 import requests
 import json
@@ -26,12 +26,16 @@ with open("LoR/temp/LoR_Data/StreamingAssets/ClientInternalConfig.json", "r") as
     clienthash = json.loads(in_file.read())["clientHash"]
 shutil.rmtree("LoR/temp")
 
-regions = ["americas", "asia", "europe", "sea"]
-entitlements_token, bearer = get_tokens(sys.argv[1], sys.argv[2])
+regions = ["europe"] #["americas", "asia", "europe", "sea"]
+entitlements_token, access_token, id_token, userinfo, pas = get_lor_tokens(sys.argv[1], sys.argv[2])
 
 def get_json(region):
-    url = f"https://fe-{region}.b.pvp.net/dataservice/v1/platform/win/patchline-ref/live/client-hash/{clienthash}/client-remote-config"
-    json_file = requests.get(url, headers={"X-Riot-Entitlements-JWT": entitlements_token, "Authorization": f"Bearer {bearer}"}, timeout=10)
+    login_payload = {"RsoEntitlementsToken": entitlements_token, "RsoIdToken": id_token, "RsoUserinfoToken": userinfo, "PasToken": pas}
+    login_response = requests.post(f"https://l-{region}.b.pvp.net/login/v1/session", headers={"X-Rso-Auth": access_token}, json=login_payload, timeout=10)
+    login_response.raise_for_status()
+
+    new_access_token = json.loads(login_response.content)["AccessToken"]
+    json_file = requests.get(f"https://fe-{region}.b.pvp.net/dataservice/v1/platform/win/patchline-ref/live/client-hash/{clienthash}/client-remote-config", headers={"Authorization": f"Bearer {new_access_token}"})
     json_file.raise_for_status()
     version = json.loads(json_file.content)["PatchlineRefBuildId"]
     os.makedirs(f"LoR/{region}", exist_ok=True)
@@ -41,4 +45,4 @@ def get_json(region):
     except FileExistsError:
         pass
 
-any(ThreadPool(4).imap_unordered(get_json, regions))
+any(ThreadPool(1).imap_unordered(get_json, regions))

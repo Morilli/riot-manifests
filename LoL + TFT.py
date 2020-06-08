@@ -26,7 +26,6 @@ def update_versions(region):
             except FileExistsError:
                 pass
 
-
 any(ThreadPool(4).imap_unordered(update_versions, version_sets))
 
 def get_exe_version(path):
