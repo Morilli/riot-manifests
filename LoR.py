@@ -7,7 +7,7 @@ from multiprocessing.pool import ThreadPool
 import subprocess
 import shutil
 
-public_json = requests.get("https://clientconfig.rpg.riotgames.com/api/v1/config/public?namespace=keystone.products.bacon.patchlines", timeout=10)
+public_json = requests.get("https://clientconfig.rpg.riotgames.com/api/v1/config/public?namespace=keystone.products.bacon.patchlines", timeout=1)
 public_json.raise_for_status()
 version = json.loads(public_json.content)["keystone.products.bacon.patchlines.live"]["platforms"]["win"]["configurations"][0]["version"]
 url = json.loads(public_json.content)["keystone.products.bacon.patchlines.live"]["platforms"]["win"]["configurations"][0]["patch_url"]
@@ -31,11 +31,11 @@ entitlements_token, access_token, id_token, userinfo, pas = get_lor_tokens(sys.a
 
 def get_json(region):
     login_payload = {"RsoEntitlementsToken": entitlements_token, "RsoIdToken": id_token, "RsoUserinfoToken": userinfo, "PasToken": pas}
-    login_response = requests.post(f"https://l-{region}.b.pvp.net/login/v1/session", headers={"X-Rso-Auth": access_token}, json=login_payload, timeout=10)
+    login_response = requests.post(f"https://l-{region}.b.pvp.net/login/v1/session", headers={"X-Rso-Auth": access_token}, json=login_payload, timeout=1)
     login_response.raise_for_status()
 
     new_access_token = json.loads(login_response.content)["AccessToken"]
-    json_file = requests.get(f"https://fe-{region}.b.pvp.net/dataservice/v1/platform/win/patchline-ref/live/client-hash/{clienthash}/client-remote-config", headers={"Authorization": f"Bearer {new_access_token}"})
+    json_file = requests.get(f"https://fe-{region}.b.pvp.net/dataservice/v1/platform/win/patchline-ref/live/client-hash/{clienthash}/client-remote-config", headers={"Authorization": f"Bearer {new_access_token}"}, timeout=1)
     json_file.raise_for_status()
     version = json.loads(json_file.content)["PatchlineRefBuildId"]
     os.makedirs(f"LoR/{region}", exist_ok=True)
