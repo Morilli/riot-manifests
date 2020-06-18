@@ -21,7 +21,11 @@ if (len(sys.argv) < 3):
     print("Error: Provide username and password in call.")
     exit(1)
 
-subprocess.run(["./ManifestDownloader.exe", url, "-b", "https://bacon.secure.dyn.riotcdn.net/channels/public/bundles", "-f", "LoR_Data/StreamingAssets/ClientInternalConfig.json", "-o", "LoR/temp"], timeout=10)
+try:
+    subprocess.run(["./ManifestDownloader.exe", url, "-b", "https://bacon.secure.dyn.riotcdn.net/channels/public/bundles", "-f", "LoR_Data/StreamingAssets/ClientInternalConfig.json", "-o", "LoR/temp"], timeout=10)
+except:
+    shutil.rmtree("LoR/temp")
+    raise
 with open("LoR/temp/LoR_Data/StreamingAssets/ClientInternalConfig.json", "r") as in_file:
     clienthash = json.loads(in_file.read())["clientHash"]
 shutil.rmtree("LoR/temp")

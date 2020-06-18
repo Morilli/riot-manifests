@@ -52,7 +52,11 @@ for patchline in json.loads(client_releases.content).values():
 
 urls = {configuration[1] for configuration in configurations}
 for url in urls:
-    subprocess.run(["./ManifestDownloader.exe", url, "-f", "LeagueClient.exe", "-o", "LoL/temp", "-t", "4"], timeout=10)
+    try:
+        subprocess.run(["./ManifestDownloader.exe", url, "-f", "LeagueClient.exe", "-o", "LoL/temp", "-t", "4"], timeout=20)
+    except:
+        shutil.rmtree("LoL/temp")
+        raise
     exe_version = get_exe_version("LoL/temp/LeagueClient.exe")
     for configuration in configurations:
         if configuration[1] == url:
