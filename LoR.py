@@ -22,7 +22,7 @@ if (len(sys.argv) < 3):
     exit(1)
 
 try:
-    subprocess.run(["./ManifestDownloader.exe", url, "-b", "https://bacon.secure.dyn.riotcdn.net/channels/public/bundles", "-f", "LoR_Data/StreamingAssets/ClientInternalConfig.json", "-o", "LoR/temp"], timeout=10)
+    subprocess.check_call(["./ManifestDownloader.exe", url, "-b", "https://bacon.secure.dyn.riotcdn.net/channels/public/bundles", "-f", "LoR_Data/StreamingAssets/ClientInternalConfig.json", "-o", "LoR/temp"], timeout=10)
 except:
     shutil.rmtree("LoR/temp")
     raise

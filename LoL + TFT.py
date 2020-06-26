@@ -53,7 +53,7 @@ for patchline in json.loads(client_releases.content).values():
 urls = {configuration[1] for configuration in configurations}
 for url in urls:
     try:
-        subprocess.run(["./ManifestDownloader.exe", url, "-f", "LeagueClient.exe", "-o", "LoL/temp", "-t", "4"], timeout=20)
+        subprocess.check_call(["./ManifestDownloader.exe", url, "-f", "LeagueClient.exe", "-o", "LoL/temp", "-t", "4"], timeout=20)
     except:
         shutil.rmtree("LoL/temp")
         raise
