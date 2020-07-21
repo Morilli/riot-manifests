@@ -9,7 +9,7 @@ import subprocess
 import shutil
 import re
 
-version_sets = ["BR1", "EUN1", "EUW1", "JP1", "KR", "LA1", "LA2", "NA1", "OC1", "PBE1", "RU", "TR1"]
+version_sets = ["BR1", "EUN1", "EUW1", "JP1", "KR", "LA1", "LA2", "NA1", "OC1", "PBE1", "RU", "STAGING", "TR1"]
 
 def update_versions(region):
     for OS in ["android", "ios", "macos", "windows"]:
