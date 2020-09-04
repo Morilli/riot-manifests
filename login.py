@@ -2,7 +2,7 @@ import requests
 import re
 import json
 
-def get_lor_tokens(username, password, session=None) -> (str, str, str, str):
+def get_lor_tokens(username, password, session=None) -> (str, str, str, str, str):
     if session is None:
         session = requests.sessions.session()
 
