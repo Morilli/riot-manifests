@@ -1,4 +1,4 @@
-from login import get_lor_tokens
+from utils import get_lor_tokens
 import sys
 import requests
 import json

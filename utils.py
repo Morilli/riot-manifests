@@ -1,6 +1,9 @@
 import requests
 import re
 import json
+import hachoir.parser
+import hachoir.metadata
+from hachoir.stream import FileInputStream
 
 def get_lor_tokens(username, password, session=None) -> (str, str, str, str, str):
     if session is None:
@@ -21,7 +24,7 @@ def get_lor_tokens(username, password, session=None) -> (str, str, str, str, str
         "username": username,
         "password": password
     }
-    put_response = session.put("https://auth.riotgames.com/api/v1/authorization", json=put_payload, timeout=1)
+    put_response = session.put("https://auth.riotgames.com/api/v1/authorization", json=put_payload, timeout=2)
     put_response.raise_for_status()
 
     access_token, id_token = re.search("access_token=(.*)&scope=.*id_token=(.*)&token_type=", put_response.content.decode()).groups()
@@ -39,3 +42,11 @@ def get_lor_tokens(username, password, session=None) -> (str, str, str, str, str
     pas = pas_response.content.decode()
 
     return (entitlements_token, access_token, id_token, userinfo, pas)
+
+def get_exe_version(path):
+    stream = FileInputStream(path)
+    parser = hachoir.parser.guessParser(stream)
+    metadata = hachoir.metadata.extractMetadata(parser)
+    version = metadata.get("version")
+    stream.close()
+    return version

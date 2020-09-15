@@ -1,3 +1,4 @@
+from utils import get_exe_version
 import requests
 import json
 import os
@@ -27,13 +28,6 @@ def update_versions(region):
 
 any(ThreadPool(4).imap_unordered(update_versions, version_sets))
 
-def get_exe_version(path):
-    stream = FileInputStream(path)
-    parser = hachoir.parser.guessParser(stream)
-    metadata = hachoir.metadata.extractMetadata(parser)
-    version = metadata.get("version")
-    stream.close()
-    return version
 
 region_map = {"BR": "BR1", "EUNE": "EUN1", "EUW": "EUW1", "JP": "JP1", "KR": "KR", "LA1": "LA1", "LA2": "LA2", "NA": "NA1", "OC1": "OC1", "RU": "RU", "TR": "TR1", "PBE": "PBE1"}
 
