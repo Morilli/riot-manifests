@@ -37,11 +37,11 @@ def get_lor_tokens(username, password, session=None) -> (str, str, str, str, str
     userinfo_response.raise_for_status()
     userinfo = userinfo_response.content.decode()
 
-    pas_response = session.get("https://riot-geo.pas.si.riotgames.com/pas/v1/service/lor-game", headers={"Authorization": f"Bearer {access_token}"}, timeout=1)
-    pas_response.raise_for_status()
-    pas = pas_response.content.decode()
+    pas_token_response = session.put("https://riot-geo.pas.si.riotgames.com/pas/v1/product/bacon", json={"id_token": id_token}, headers={"Authorization": f"Bearer {access_token}"}, timeout=1)
+    pas_token_response.raise_for_status()
+    pas_token = json.loads(pas_token_response.content)["token"]
 
-    return (entitlements_token, access_token, id_token, userinfo, pas)
+    return (entitlements_token, access_token, id_token, userinfo, pas_token)
 
 def get_exe_version(path):
     stream = FileInputStream(path)
