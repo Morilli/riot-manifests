@@ -10,7 +10,7 @@ def get_valorant_version(path):
         data = exe_file.read()
         pattern = "++Ares-Core+release-".encode("utf-16le")
         pos = data.find(pattern) + len(pattern) + 48
-        return data[pos:pos+32].decode("utf-16le")
+        return data[pos:pos+32].decode("utf-16le").rstrip("\x00")
 
 valorant_release = requests.get("https://clientconfig.rpg.riotgames.com/api/v1/config/public?namespace=keystone.products.valorant.patchlines", timeout=1)
 
