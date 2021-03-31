@@ -1,0 +1,3 @@
+I have written down some early manifests in some .txt files here: https://github.com/Morilli/league-patcher-jsons
+
+A google doc from pixelbutts listing a lot of manifests including their release date can be found here: https://docs.google.com/spreadsheets/d/11HYqHLU6XZ7Isr5DJxzhuT24_uEaZeSCnjc3rspSnT4/
