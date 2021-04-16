@@ -34,7 +34,7 @@ regions = ["europe"] #["americas", "asia", "europe", "sea"]
 entitlements_token, access_token, id_token, userinfo, pas = get_lor_tokens(sys.argv[1], sys.argv[2])
 
 def get_json(region):
-    login_payload = {"RsoEntitlementsToken": entitlements_token, "RsoIdToken": id_token, "RsoUserinfoToken": userinfo, "PasToken": pas}
+    login_payload = {"RsoEntitlementsToken": entitlements_token, "RsoIdToken": id_token, "RsoUserinfoToken": userinfo, "PasToken": pas, "ClientPatchline": "live"}
     login_response = requests.post(f"https://l-{region}.b.pvp.net/login/v1/session", headers={"X-Rso-Auth": access_token}, json=login_payload, timeout=1)
     login_response.raise_for_status()
 
