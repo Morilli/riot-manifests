@@ -1,6 +1,7 @@
 from utils import get_exe_version
 import requests
 import json
+import plistlib
 import os
 from multiprocessing.pool import ThreadPool
 import hachoir.parser
@@ -30,31 +31,31 @@ any(ThreadPool(4).imap_unordered(update_versions, version_sets))
 
 
 region_map = {"BR": "BR1", "EUNE": "EUN1", "EUW": "EUW1", "JP": "JP1", "KR": "KR", "LA1": "LA1", "LA2": "LA2", "NA": "NA1", "OC1": "OC1", "RU": "RU", "TR": "TR1", "PBE": "PBE1"}
+os_map = {"win": "windows", "mac": "macos"}
 
 client_releases = requests.get("https://clientconfig.rpg.riotgames.com/api/v1/config/public?namespace=keystone.products.league_of_legends.patchlines", timeout=1)
 client_releases.raise_for_status()
 
 configurations = []
-versions = []
 for patchline in json.loads(client_releases.content).values():
-    for platform in ["win", "mac"]:
+    for platform in patchline["platforms"]:
         for configuration in patchline["platforms"][platform]["configurations"]:
-            if platform == "mac":
-                versions.append((region_map[configuration["id"]], "macos", re.search("theme/(.*?)/", configuration["metadata"]["theme_manifest"]).group(1) + f"_{configuration['patch_url'][-25:-9]}", configuration["patch_url"]))
-            else:
-                configurations.append((region_map[configuration["id"]], configuration["patch_url"]))
+            configurations.append((region_map[configuration["id"]], platform, configuration["patch_url"]))
 
-urls = {configuration[1] for configuration in configurations}
-for url in urls:
+versions = []
+for configuration in configurations:
     try:
-        subprocess.check_call(["./ManifestDownloader.exe", url, "-f", "LeagueClient.exe", "-o", "LoL/temp", "-t", "4"], timeout=20)
+        if configuration[1] == "mac":
+            subprocess.check_call(["./ManifestDownloader.exe", configuration[2], "-f", "Contents/LoL/LeagueClient.app/Contents/Info.plist", "-o", "LoL/temp"], timeout=10)
+            with open("LoL/temp/Contents/LoL/LeagueClient.app/Contents/Info.plist", "rb") as in_file:
+                exe_version = f'{plistlib.load(in_file)["FileVersion"]}_{configuration[2][-25:-9]}'
+        else: # windows
+            subprocess.check_call(["./ManifestDownloader.exe", configuration[2], "-f", "LeagueClient.exe", "-o", "LoL/temp", "-t", "4"], timeout=20)
+            exe_version = get_exe_version("LoL/temp/LeagueClient.exe")
     except:
         shutil.rmtree("LoL/temp")
         raise
-    exe_version = get_exe_version("LoL/temp/LeagueClient.exe")
-    for configuration in configurations:
-        if configuration[1] == url:
-            versions.append((configuration[0], "windows", exe_version, url))
+    versions.append((configuration[0], os_map[configuration[1]], exe_version, configuration[2]))
 
 shutil.rmtree("LoL/temp")
 
