@@ -1,13 +1,15 @@
 import requests
+from requests import Session
 import re
 import json
 import hachoir.parser
 import hachoir.metadata
 from hachoir.stream import FileInputStream
+from typing import Tuple
 
-def get_lor_tokens(username, password, session=None) -> (str, str, str, str, str):
+def get_lor_tokens(username, password, session=None) -> Tuple[str, str, str, str, str]:
     if session is None:
-        session = requests.sessions.session()
+        session = Session()
 
     post_payload = {
         "client_id": "bacon-client",
@@ -50,3 +52,13 @@ def get_exe_version(path):
     version = metadata.get("version")
     stream.close()
     return version
+
+def download_manifest(manifest_url, temp_path, session=None):
+    if session is None:
+        session = requests
+
+    manifest = session.get(manifest_url, timeout=1)
+    manifest.raise_for_status()
+
+    with open(f"{temp_path}/{manifest_url[-25:]}", "wb") as out_file:
+        out_file.write(manifest.content)

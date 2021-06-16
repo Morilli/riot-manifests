@@ -2,7 +2,6 @@ from utils import get_exe_version
 import requests
 import json
 import os
-from multiprocessing.pool import ThreadPool
 import subprocess
 import shutil
 
@@ -16,7 +15,7 @@ for patchline in patchlines:
     manifest_url = json.loads(json_file.content)["keystone.self_update.manifest_url"]
     os.makedirs(f"Riot Client/{patchline}", exist_ok=True)
     try:
-        subprocess.check_call(["./ManifestDownloader.exe", manifest_url, "-b", "https://ks-foundation.secure.dyn.riotcdn.net/channels/public/bundles", "-f", "RiotClientServices.exe", "-o", "Riot Client/temp", "-t", "4"], timeout=20)
+        subprocess.check_call(["./ManifestDownloader.exe", manifest_url, "-b", "https://ks-foundation.secure.dyn.riotcdn.net/channels/public/bundles", "-f", "RiotClientServices.exe", "-o", "Riot Client/temp", "-t", "8"], timeout=20)
     except:
         shutil.rmtree("Riot Client/temp")
         raise
