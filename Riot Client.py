@@ -4,8 +4,9 @@ import json
 import os
 import subprocess
 import shutil
+import plistlib
 
-patchlines = ["KeystoneFoundationLiveWin", "KeystoneFoundationBetaWin"]
+patchlines = ["KeystoneFoundationLiveWin", "KeystoneFoundationBetaWin", "KeystoneFoundationLiveMac", "KeystoneFoundationBetaMac"]
 
 for patchline in patchlines:
     json_file = requests.get(f"https://clientconfig.rpg.riotgames.com/api/v1/config/public?version=99.0.0.9999999&patchline={patchline}&app=Riot Client&namespace=keystone.self_update", timeout=1)
@@ -14,12 +15,17 @@ for patchline in patchlines:
     level = json.loads(json_file.content)["keystone.self_update.level"]
     manifest_url = json.loads(json_file.content)["keystone.self_update.manifest_url"]
     os.makedirs(f"Riot Client/{patchline}", exist_ok=True)
+    download_info = ("Contents/Info.plist", "mac") if "Mac" in patchline else ("RiotClientServices.exe", "win")
     try:
-        subprocess.check_call(["./ManifestDownloader.exe", manifest_url, "-b", "https://ks-foundation.secure.dyn.riotcdn.net/channels/public/bundles", "-f", "RiotClientServices.exe", "-o", "Riot Client/temp", "-t", "8"], timeout=20)
+        subprocess.check_call(["./ManifestDownloader.exe", manifest_url, "-b", "https://ks-foundation.secure.dyn.riotcdn.net/channels/public/bundles", "-f", download_info[0], "-o", "Riot Client/temp", "-t", "8"], timeout=20)
     except:
         shutil.rmtree("Riot Client/temp")
         raise
-    exe_version = get_exe_version("Riot Client/temp/RiotClientServices.exe")
+    if download_info[1] == "win":
+        exe_version = get_exe_version(f"Riot Client/temp/{download_info[0]}")
+    else:
+        with open(f"Riot Client/temp/{download_info[0]}", "rb") as in_file:
+            exe_version = f'{plistlib.load(in_file)["FileVersion"]}_{manifest_url[-25:-9]}'
     try:
         with open(f"Riot Client/{patchline}/{exe_version}_{level}.json", "xb") as out_file:
             out_file.write(json_file.content)
