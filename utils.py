@@ -89,5 +89,6 @@ def save_file(file_path, data):
         except:
             old_data = None
 
-    with open(file_path, "wb") as out_file:
-        out_file.write(data)
+    if old_data is None:
+        with open(file_path, "wb") as out_file:
+            out_file.write(data)
