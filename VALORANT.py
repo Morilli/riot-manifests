@@ -1,4 +1,4 @@
-from utils import download_manifest
+from utils import download_manifest, save_file
 import requests
 import json
 import os
@@ -30,10 +30,6 @@ for configuration in configurations:
         raise
     exe_version = get_valorant_version("VALORANT/temp/ShooterGame/Binaries/Win64/VALORANT-Win64-Shipping.exe")
 
-    try:
-        with open(f"VALORANT/{region}/{exe_version}.txt", "x") as out_file:
-            out_file.write(patch_url)
-    except FileExistsError:
-        pass
+    save_file(f"VALORANT/{region}/{exe_version}.txt", patch_url)
 
 shutil.rmtree("VALORANT/temp")

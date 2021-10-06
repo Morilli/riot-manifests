@@ -1,4 +1,4 @@
-from utils import get_lor_tokens
+from utils import get_lor_tokens, save_file
 import sys
 from requests import Session
 import json
@@ -12,11 +12,7 @@ public_json = session.get("https://clientconfig.rpg.riotgames.com/api/v1/config/
 public_json.raise_for_status()
 version = json.loads(public_json.content)["keystone.products.bacon.patchlines.live"]["platforms"]["win"]["configurations"][0]["version"]
 url = json.loads(public_json.content)["keystone.products.bacon.patchlines.live"]["platforms"]["win"]["configurations"][0]["patch_url"]
-try:
-    with open(f"LoR/{version}.txt", "x") as out_file:
-        out_file.write(url)
-except FileExistsError:
-    pass
+save_file(f"LoR/{version}.txt", url)
 
 if (len(sys.argv) < 3):
     print("Error: Provide username and password in call.")
@@ -44,10 +40,6 @@ def get_json(region):
     json_file.raise_for_status()
     version = json.loads(json_file.content)["PatchlineRefBuildId"]
     os.makedirs(f"LoR/{region}", exist_ok=True)
-    try:
-        with open(f"LoR/{region}/{version}.json", "xb") as out_file:
-            out_file.write(json_file.content)
-    except FileExistsError:
-        pass
+    save_file(f"LoR/{region}/{version}.json", json_file.content)
 
 ThreadPool(1).map(get_json, regions, 1)

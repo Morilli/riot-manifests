@@ -1,5 +1,5 @@
 from requests import Session
-from utils import get_exe_version, download_manifest
+from utils import get_exe_version, download_manifest, save_file
 import json
 import plistlib
 import os
@@ -19,11 +19,7 @@ def update_versions(region):
         for release in json.loads(releases.content)["releases"]:
             path = f'{"LoL" if OS == "macos" or OS == "windows" else "TFT"}/{region}/{OS}/{release["release"]["labels"]["riot:artifact_type_id"]["values"][0]}'
             os.makedirs(path, exist_ok=True)
-            try:
-                with open(f'{path}/{release["release"]["labels"]["riot:artifact_version_id"]["values"][0].split("+")[0]}.txt', "x") as out_file:
-                    out_file.write(release["download"]["url"])
-            except FileExistsError:
-                pass
+            save_file(f'{path}/{release["release"]["labels"]["riot:artifact_version_id"]["values"][0].split("+")[0]}.txt', release["download"]["url"])
 
 pool.map(update_versions, version_sets, 1)
 
@@ -62,8 +58,4 @@ shutil.rmtree("LoL/temp")
 for version in versions:
     path = f"LoL/{version[0]}/{version[1]}/league-client"
     os.makedirs(path, exist_ok=True)
-    try:
-        with open(f"{path}/{version[2]}.txt", "x") as out_file:
-            out_file.write(version[3])
-    except FileExistsError:
-        pass
+    save_file(f"{path}/{version[2]}.txt", version[3])

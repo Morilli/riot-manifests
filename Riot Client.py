@@ -1,4 +1,4 @@
-from utils import get_exe_version
+from utils import get_exe_version, save_file
 import requests
 import json
 import os
@@ -26,10 +26,6 @@ for patchline in patchlines:
     else:
         with open(f"Riot Client/temp/{download_info[0]}", "rb") as in_file:
             exe_version = f'{plistlib.load(in_file)["FileVersion"]}_{manifest_url[-25:-9]}'
-    try:
-        with open(f"Riot Client/{patchline}/{exe_version}_{level}.json", "xb") as out_file:
-            out_file.write(json_file.content)
-    except FileExistsError:
-        pass
+    save_file(f"Riot Client/{patchline}/{exe_version}_{level}.json", json_file.content)
 
 shutil.rmtree("Riot Client/temp")

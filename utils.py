@@ -6,6 +6,7 @@ import hachoir.parser
 import hachoir.metadata
 from hachoir.stream import FileInputStream
 from typing import Tuple
+import os.path
 
 def get_lor_tokens(username, password, session=None) -> Tuple[str, str, str, str, str]:
     if session is None:
@@ -62,3 +63,31 @@ def download_manifest(manifest_url, temp_path, session=None):
 
     with open(f"{temp_path}/{manifest_url[-25:]}", "wb") as out_file:
         out_file.write(manifest.content)
+
+# Because riot likes semantic versioning they will release a new version with
+# exactly the same version number whenever they want, so there's a mechanism
+# for saving multiple "same" versions
+def save_file(file_path, data):
+    if isinstance(data, str):
+        data = data.encode()
+
+    try:
+        with open(file_path, "rb") as in_file:
+            old_data = in_file.read()
+    except:
+        old_data = None
+
+    path_part, extension = os.path.splitext(file_path)
+    counter = 1
+
+    while old_data is not None and old_data != data:
+        counter += 1
+        file_path = f"{path_part}__{counter}{extension}"
+        try:
+            with open(file_path, "rb") as in_file:
+                old_data = in_file.read()
+        except:
+            old_data = None
+
+    with open(file_path, "wb") as out_file:
+        out_file.write(data)
