@@ -17,7 +17,7 @@ for patchline in patchlines:
     os.makedirs(f"Riot Client/{patchline}", exist_ok=True)
     download_info = ("Contents/Info.plist", "mac") if "Mac" in patchline else ("RiotClientServices.exe", "win")
     try:
-        subprocess.check_call(["./ManifestDownloader.exe", manifest_url, "-b", "https://ks-foundation.secure.dyn.riotcdn.net/channels/public/bundles", "-f", download_info[0], "-o", "Riot Client/temp", "-t", "8"], timeout=20)
+        subprocess.check_call(["./ManifestDownloader.exe", manifest_url, "-b", "https://ks-foundation.secure.dyn.riotcdn.net/channels/public/bundles", "-f", download_info[0], "-o", "Riot Client/temp", "-t", "8"], timeout=30)
     except:
         shutil.rmtree("Riot Client/temp")
         raise
