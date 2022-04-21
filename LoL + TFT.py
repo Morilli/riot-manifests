@@ -5,7 +5,6 @@ import plistlib
 import os
 from multiprocessing.pool import ThreadPool
 import subprocess
-import shutil
 
 version_sets = ["BR1", "EUN1", "EUW1", "JP1", "KR", "LA1", "LA2", "NA1", "OC1", "PBE1", "RU", "STAGING", "TR1"]
 session = Session()
@@ -40,20 +39,14 @@ os.makedirs("LoL/temp", exist_ok=True)
 pool.starmap(download_manifest, {(configuration[2], "LoL/temp", session) for configuration in configurations}, 1)
 
 for configuration in configurations:
-    try:
-        if configuration[1] == "mac":
-            subprocess.check_call(["./ManifestDownloader.exe", f"LoL/temp/{configuration[2][-25:]}", "-f", "Contents/LoL/LeagueClient.app/Contents/Info.plist", "-o", "LoL/temp"], timeout=5)
-            with open("LoL/temp/Contents/LoL/LeagueClient.app/Contents/Info.plist", "rb") as in_file:
-                exe_version = f'{plistlib.load(in_file)["FileVersion"]}_{configuration[2][-25:-9]}'
-        else: # windows
-            subprocess.check_call(["./ManifestDownloader.exe", f"LoL/temp/{configuration[2][-25:]}", "-f", "LeagueClient.exe", "-o", "LoL/temp", "-t", "4"], timeout=10)
-            exe_version = get_exe_version("LoL/temp/LeagueClient.exe")
-    except:
-        shutil.rmtree("LoL/temp")
-        raise
+    if configuration[1] == "mac":
+        subprocess.check_call(["./ManifestDownloader.exe", f"LoL/temp/{configuration[2][-25:]}", "-f", "Contents/LoL/LeagueClient.app/Contents/Info.plist", "-o", "LoL/temp"], timeout=5)
+        with open("LoL/temp/Contents/LoL/LeagueClient.app/Contents/Info.plist", "rb") as in_file:
+            exe_version = f'{plistlib.load(in_file)["FileVersion"]}_{configuration[2][-25:-9]}'
+    else: # windows
+        subprocess.check_call(["./ManifestDownloader.exe", f"LoL/temp/{configuration[2][-25:]}", "-f", "LeagueClient.exe", "-o", "LoL/temp", "-t", "4"], timeout=10)
+        exe_version = get_exe_version("LoL/temp/LeagueClient.exe")
     versions.append((configuration[0], os_map[configuration[1]], exe_version, configuration[2]))
-
-shutil.rmtree("LoL/temp")
 
 for version in versions:
     path = f"LoL/{version[0]}/{version[1]}/league-client"
