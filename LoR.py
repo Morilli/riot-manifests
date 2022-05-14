@@ -26,11 +26,11 @@ entitlements_token, access_token, id_token, userinfo, pas = get_lor_tokens(sys.a
 
 def get_json(region):
     login_payload = {"RsoEntitlementsToken": entitlements_token, "RsoIdToken": id_token, "RsoUserinfoToken": userinfo, "PasToken": pas, "ClientPatchline": "live"}
-    login_response = session.post(f"https://l-{region}.b.pvp.net/login/v1/session", headers={"X-Rso-Auth": access_token}, json=login_payload, timeout=1)
+    login_response = session.post(f"https://l-{region}-green.b.pvp.net/login/v1/session", headers={"X-Rso-Auth": access_token}, json=login_payload)
     login_response.raise_for_status()
 
     new_access_token = json.loads(login_response.content)["AccessToken"]
-    json_file = session.get(f"https://fe-{region}.b.pvp.net/dataservice/v1/platform/win/patchline-ref/live/client-hash/{clienthash}/client-remote-config", headers={"Authorization": f"Bearer {new_access_token}"}, timeout=1)
+    json_file = session.get(f"https://fe-{region}-green.b.pvp.net/dataservice/v1/platform/win/patchline-ref/live/client-hash/{clienthash}/client-remote-config", headers={"Authorization": f"Bearer {new_access_token}"}, timeout=1)
     json_file.raise_for_status()
     version = json.loads(json_file.content)["PatchlineRefBuildId"]
     os.makedirs(f"LoR/{region}", exist_ok=True)
