@@ -1,5 +1,7 @@
+import ssl
 import requests
 from requests import Session
+from requests.adapters import HTTPAdapter
 import re
 import json
 import hachoir.parser
@@ -7,34 +9,38 @@ import hachoir.metadata
 from hachoir.stream import FileInputStream
 from typing import Tuple
 import os.path
-import subprocess
+
+class TLSAdapter(HTTPAdapter):
+    def init_poolmanager(self, *args, **kwargs) -> None:
+        ctx = ssl.create_default_context(ssl.Purpose.SERVER_AUTH)
+        ctx.set_ciphers('DEFAULT@SECLEVEL=1')
+        kwargs['ssl_context'] = ctx
+        return super(TLSAdapter, self).init_poolmanager(*args, **kwargs)
 
 def get_lor_tokens(username, password, session=None) -> Tuple[str, str, str, str, str]:
     if session is None:
         session = Session()
+    session.headers = {"Accept": "application/json, text/plain, */*"}
+    session.mount('https://', TLSAdapter())
 
-    # post_payload = {
-    #     "client_id": "bacon-client",
-    #     "nonce": "none",
-    #     "response_type": "token id_token",
-    #     "redirect_uri": "http://localhost/redirect",
-    #     "scope": "openid ban lol link account"
-    # }
-    # post_response = session.post("https://auth.riotgames.com/api/v1/authorization", json=post_payload, timeout=1)
-    # post_response.raise_for_status()
+    post_payload = {
+        "client_id": "bacon-client",
+        "nonce": "none",
+        "response_type": "token id_token",
+        "redirect_uri": "http://localhost/redirect",
+        "scope": "account openid"
+    }
+    post_response = session.post("https://auth.riotgames.com/api/v1/authorization", json=post_payload, timeout=1)
+    post_response.raise_for_status()
 
-    # put_payload = {
-    #     "type": "auth",
-    #     "username": username,
-    #     "password": password
-    # }
-    # put_response = session.put("https://auth.riotgames.com/api/v1/authorization", json=put_payload, timeout=2)
-    # put_response.raise_for_status()
-
-    process = subprocess.Popen(["./riot_tokens.exe", username, password], stdout=subprocess.PIPE, text=True)
-    put_response = process.stdout.read()
-    access_token, id_token = re.search("access_token=(.*)&scope=.*id_token=(.*)&token_type=", put_response).groups()
-
+    put_payload = {
+        "type": "auth",
+        "username": username,
+        "password": password
+    }
+    put_response = session.put("https://auth.riotgames.com/api/v1/authorization", json=put_payload, timeout=2)
+    put_response.raise_for_status()
+    access_token, id_token = re.search("access_token=(.*)&scope=.*id_token=(.*)&token_type=", put_response.content.decode()).groups()
 
     entitlements_token_response = session.post("https://entitlements.auth.riotgames.com/api/token/v1", json={"urn": "urn:entitlement:%"}, headers={"Authorization": f"Bearer {access_token}"}, timeout=1)
     entitlements_token_response.raise_for_status()
