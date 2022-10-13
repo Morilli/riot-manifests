@@ -13,8 +13,8 @@ import os.path
 class TLSAdapter(HTTPAdapter):
     def init_poolmanager(self, *args, **kwargs) -> None:
         ctx = ssl.create_default_context(ssl.Purpose.SERVER_AUTH)
-        ctx.minimum_version = ssl.TLSVersion.TLSv1_3
-        ctx.set_ciphers('DEFAULT@SECLEVEL=1')
+        # ctx.minimum_version = ssl.TLSVersion.TLSv1_3
+        # ctx.set_ciphers('DEFAULT@SECLEVEL=1')
         kwargs['ssl_context'] = ctx
         return super(TLSAdapter, self).init_poolmanager(*args, **kwargs)
 
