@@ -21,7 +21,10 @@ class TLSAdapter(HTTPAdapter):
 def get_lor_tokens(username, password, session=None) -> Tuple[str, str, str, str, str]:
     if session is None:
         session = Session()
-    session.headers = {"Accept": "application/json, text/plain, */*"}
+    session.headers = {
+        "Accept": "application/json",
+        "User-Agent": "lul"
+    }
     session.mount('https://', TLSAdapter())
 
     post_payload = {
