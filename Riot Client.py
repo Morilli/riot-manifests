@@ -14,8 +14,8 @@ for patchline in patchlines:
     level = json.loads(json_file.content)["keystone.self_update.level"]
     manifest_url = json.loads(json_file.content)["keystone.self_update.manifest_url"]
     os.makedirs(f"Riot Client/{patchline}", exist_ok=True)
-    download_info = ("Contents/Info.plist", "mac") if "Mac" in patchline else ("RiotClientServices.exe", "win")
-    subprocess.check_call(["./ManifestDownloader.exe", manifest_url, "-b", "https://ks-foundation.secure.dyn.riotcdn.net/channels/public/bundles", "-f", download_info[0], "-o", "Riot Client/temp", "-t", "8"], timeout=30)
+    download_info = ("Contents/Info.plist", "mac") if "Mac" in patchline else ("RiotClientFoundation.dll", "win")
+    subprocess.check_call(["./ManifestDownloader.exe", manifest_url, "-b", "https://ks-foundation.secure.dyn.riotcdn.net/channels/public/bundles", "-f", download_info[0], "-o", "Riot Client/temp", "-t", "8"], timeout=10)
     if download_info[1] == "win":
         exe_version = get_exe_version(f"Riot Client/temp/{download_info[0]}")
     else:
