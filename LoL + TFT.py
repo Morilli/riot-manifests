@@ -6,7 +6,7 @@ import os
 from multiprocessing.pool import ThreadPool
 import subprocess
 
-version_sets = ["BR1", "EUN1", "EUW1", "JP1", "KR", "LA1", "LA2", "NA1", "OC1", "PBE1", "RU", "STAGING", "TR1"]
+version_sets = ["BR1", "EUN1", "EUW1", "JP1", "KR", "LA1", "LA2", "NA1", "OC1", "PBE1", "PH2", "RU", "SG2", "STAGING", "TH2", "TR1", "TW2", "VN2"]
 session = Session()
 pool = ThreadPool(8)
 
@@ -22,7 +22,7 @@ def update_versions(region):
 
 pool.map(update_versions, version_sets, 1)
 
-region_map = {"BR": "BR1", "EUNE": "EUN1", "EUW": "EUW1", "JP": "JP1", "KR": "KR", "LA1": "LA1", "LA2": "LA2", "NA": "NA1", "OC1": "OC1", "RU": "RU", "TR": "TR1", "PBE": "PBE1"}
+region_map = {"BR": "BR1", "EUNE": "EUN1", "EUW": "EUW1", "JP": "JP1", "KR": "KR", "LA1": "LA1", "LA2": "LA2", "NA": "NA1", "OC1": "OC1", "PH2": "PH2", "RU": "RU", "SG2": "SG2", "TH2": "TH2", "TR": "TR1", "TW2": "TW2", "VN2": "VN2", "PBE": "PBE1"}
 os_map = {"win": "windows", "mac": "macos"}
 
 client_releases = session.get("https://clientconfig.rpg.riotgames.com/api/v1/config/public?namespace=keystone.products.league_of_legends.patchlines", timeout=1)
