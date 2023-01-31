@@ -11,9 +11,12 @@ def get_valorant_version(path):
         pattern = "++Ares-Core+release-".encode("utf-16le")
         pos = data.find(pattern) + len(pattern)
         short_version = data[pos:pos+10].decode("utf-16le")
-        short_version_tuple = tuple(int(n) for n in short_version.split("."))
-        pos += 40 if short_version_tuple >= (6, 1) else 48
-        return data[pos:pos+32].decode("utf-16le").rstrip("\x00")
+        pos += 10
+        version = '\0'
+        while '\0' in version:
+            pos += 2
+            version = data[pos:pos+32].decode("utf-16le").rstrip("\x00")
+        return version
 
 valorant_release = requests.get("https://clientconfig.rpg.riotgames.com/api/v1/config/public?namespace=keystone.products.valorant.patchlines", timeout=1)
 
