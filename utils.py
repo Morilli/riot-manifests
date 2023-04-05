@@ -61,22 +61,26 @@ def get_lor_tokens(username, password, session=None) -> Tuple[str, str, str, str
     return (entitlements_token, access_token, id_token, userinfo, pas_token)
 
 def get_exe_version(path):
-    stream = FileInputStream(path)
-    parser = hachoir.parser.guessParser(stream)
-    metadata = hachoir.metadata.extractMetadata(parser)
-    version = metadata.get("version")
-    stream.close()
+    with FileInputStream(path) as stream:
+        parser = hachoir.parser.guessParser(stream)
+        metadata = hachoir.metadata.extractMetadata(parser)
+        version = metadata.get("version")
     return version
 
 def download_manifest(manifest_url, temp_path, session=None):
     if session is None:
         session = requests
 
+    manifest_path = f"{temp_path}/{manifest_url[-25:]}"
+    if os.path.exists(manifest_path):
+        return
+
     manifest = session.get(manifest_url, timeout=1)
     manifest.raise_for_status()
 
-    with open(f"{temp_path}/{manifest_url[-25:]}", "wb") as out_file:
+    with open(f"{manifest_path}.temp", "wb") as out_file:
         out_file.write(manifest.content)
+    os.rename(f"{manifest_path}.temp", manifest_path)
 
 # Because riot likes semantic versioning they will release a new version with
 # exactly the same version number whenever they want, so there's a mechanism
