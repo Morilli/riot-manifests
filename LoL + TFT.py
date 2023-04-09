@@ -45,7 +45,11 @@ for configuration in configurations:
             exe_version = f'{plistlib.load(in_file)["FileVersion"]}_{configuration[2][-25:-9]}'
     else: # windows
         subprocess.check_call(["./ManifestDownloader.exe", f"LoL/temp/{configuration[2][-25:]}", "-f", "LeagueClient.exe", "-o", "LoL/temp", "-t", "4"], timeout=10)
-        exe_version = get_exe_version("LoL/temp/LeagueClient.exe")
+        try:
+            exe_version = get_exe_version("LoL/temp/LeagueClient.exe")
+        except ValueError:
+            exe_version = configuration[2][-25:-9]
+            print(exe_version)
     versions.append((configuration[0], os_map[configuration[1]], exe_version, configuration[2]))
 
 for version in versions:
