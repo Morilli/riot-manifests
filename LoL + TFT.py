@@ -16,7 +16,13 @@ def update_versions(region):
         releases.raise_for_status()
 
         for release in json.loads(releases.content)["releases"]:
-            path = f'{"LoL" if OS == "macos" or OS == "windows" else "TFT"}/{region}/{OS}/{release["release"]["labels"]["riot:artifact_type_id"]["values"][0]}'
+            artifact_type_id = release["release"]["labels"]["riot:artifact_type_id"]["values"][0]
+            path = f'{"LoL" if OS in {"macos", "windows"} else "TFT"}/{region}/{OS}/{artifact_type_id}'
+            if artifact_type_id == "lol-standalone-client":
+                # "public-android-arm64-now-store" -> ""
+                # "public-android-arm64-now-store-vn" -> "-vn"
+                path += release["release"]["labels"]["buildtracker_config"]["values"][0].split("-", 4)[-1][5:]
+
             os.makedirs(path, exist_ok=True)
             save_file(f'{path}/{release["release"]["labels"]["riot:artifact_version_id"]["values"][0].split("+")[0]}.txt', release["download"]["url"])
 
