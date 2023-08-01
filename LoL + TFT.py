@@ -21,7 +21,7 @@ def update_versions(region):
             if artifact_type_id == "lol-standalone-client":
                 # "public-android-arm64-now-store" -> ""
                 # "public-android-arm64-now-store-vn" -> "-vn"
-                path += release["release"]["labels"]["buildtracker_config"]["values"][0].split("-", 4)[-1][5:]
+                path += release["release"]["labels"]["buildtracker_config"]["values"][0].split("store")[-1]
 
             os.makedirs(path, exist_ok=True)
             save_file(f'{path}/{release["release"]["labels"]["riot:artifact_version_id"]["values"][0].split("+")[0]}.txt', release["download"]["url"])
