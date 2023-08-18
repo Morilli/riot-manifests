@@ -1,5 +1,4 @@
 import ssl
-import requests
 from requests import Session
 from requests.adapters import HTTPAdapter
 import re
@@ -18,14 +17,19 @@ class TLSAdapter(HTTPAdapter):
         kwargs['ssl_context'] = ctx
         return super(TLSAdapter, self).init_poolmanager(*args, **kwargs)
 
-def get_lor_tokens(username, password, session=None) -> Tuple[str, str, str, str, str]:
-    if session is None:
-        session = Session()
+def setup_session() -> Session:
+    session = Session()
     session.headers = {
         "Accept": "application/json",
         "User-Agent": "lul"
     }
     session.mount('https://', TLSAdapter())
+
+    return session
+
+def get_lor_tokens(username, password, session=None) -> Tuple[str, str, str, str, str]:
+    if session is None:
+        session = setup_session()
 
     post_payload = {
         "client_id": "bacon-client",
@@ -69,7 +73,7 @@ def get_exe_version(path):
 
 def download_manifest(manifest_url, temp_path, session=None):
     if session is None:
-        session = requests
+        session = setup_session()
 
     manifest_path = f"{temp_path}/{manifest_url[-25:]}"
     if os.path.exists(manifest_path):

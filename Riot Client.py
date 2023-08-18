@@ -1,14 +1,14 @@
-from utils import get_exe_version, save_file
-import requests
+from utils import get_exe_version, save_file, setup_session
 import json
 import os
 import subprocess
 import plistlib
 
 patchlines = ["KeystoneFoundationLiveWin", "KeystoneFoundationBetaWin", "KeystoneFoundationLiveMac", "KeystoneFoundationBetaMac"]
+session = setup_session()
 
 for patchline in patchlines:
-    json_file = requests.get(f"https://clientconfig.rpg.riotgames.com/api/v1/config/public?version=99.0.0.9999999&patchline={patchline}&app=Riot Client&namespace=keystone.self_update", timeout=1)
+    json_file = session.get(f"https://clientconfig.rpg.riotgames.com/api/v1/config/public?version=99.0.0.9999999&patchline={patchline}&app=Riot Client&namespace=keystone.self_update", timeout=1)
     json_file.raise_for_status()
 
     level = json.loads(json_file.content)["keystone.self_update.level"]

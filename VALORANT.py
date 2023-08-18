@@ -1,5 +1,4 @@
-from utils import download_manifest, save_file
-import requests
+from utils import download_manifest, save_file, setup_session
 import json
 import os
 import subprocess
@@ -18,11 +17,13 @@ def get_valorant_version(path):
             version = data[pos:pos+32].decode("utf-16le").rstrip("\x00")
         return version
 
-valorant_release = requests.get("https://clientconfig.rpg.riotgames.com/api/v1/config/public?namespace=keystone.products.valorant.patchlines", timeout=1)
+session = setup_session()
+
+valorant_release = session.get("https://clientconfig.rpg.riotgames.com/api/v1/config/public?namespace=keystone.products.valorant.patchlines", timeout=1)
 
 configurations = [configuration for configuration in json.loads(valorant_release.content)["keystone.products.valorant.patchlines.live"]["platforms"]["win"]["configurations"]]
 os.makedirs("VALORANT/temp", exist_ok=True)
-ThreadPool(4).starmap(download_manifest, {(configuration["patch_url"], "VALORANT/temp") for configuration in configurations}, 1)
+ThreadPool(4).starmap(download_manifest, {(configuration["patch_url"], "VALORANT/temp", session) for configuration in configurations}, 1)
 
 region_order = {"na": 0, "br": 1, "latam": 2, "kr": 3, "ap": 4, "eu": 5} # the order they are updated in, to maximize cache efficiency when requesting files in order
 for configuration in sorted(configurations, key=lambda config: region_order[config["valid_shards"]["live"][0]]):

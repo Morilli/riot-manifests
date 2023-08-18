@@ -1,5 +1,4 @@
-from requests import Session
-from utils import get_exe_version, download_manifest, save_file
+from utils import get_exe_version, download_manifest, save_file, setup_session
 import json
 import plistlib
 import os
@@ -7,7 +6,7 @@ from multiprocessing.pool import ThreadPool
 import subprocess
 
 version_sets = ["BR1", "EUN1", "EUW1", "JP1", "KR", "LA1", "LA2", "NA1", "OC1", "PBE1", "PH2", "RU", "SG2", "STAGING", "TH2", "TR1", "TW2", "VN2"]
-session = Session()
+session = setup_session()
 pool = ThreadPool(8)
 
 def update_versions(region):

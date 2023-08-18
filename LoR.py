@@ -1,12 +1,11 @@
-from utils import get_lor_tokens, save_file
+from utils import get_lor_tokens, save_file, setup_session
 import sys
-from requests import Session
 import json
 import os
 from multiprocessing.pool import ThreadPool
 import subprocess
 
-session = Session()
+session = setup_session()
 public_json = session.get("https://clientconfig.rpg.riotgames.com/api/v1/config/public?namespace=keystone.products.bacon.patchlines", timeout=1)
 public_json.raise_for_status()
 version = json.loads(public_json.content)["keystone.products.bacon.patchlines.live"]["platforms"]["win"]["configurations"][0]["version"]
