@@ -1,2 +1,2 @@
 requests
-hachoir
+hachoir>=3.3
