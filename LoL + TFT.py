@@ -5,7 +5,7 @@ import os
 from multiprocessing.pool import ThreadPool
 import subprocess
 
-version_sets = ["BR1", "EUN1", "EUW1", "JP1", "KR", "LA1", "LA2", "NA1", "OC1", "PBE1", "PH2", "RU", "SG2", "STAGING", "TH2", "TR1", "TW2", "VN2"]
+version_sets = ["BR1", "EUN1", "EUW1", "JP1", "KR", "LA1", "LA2", "NA1", "OC1", "PBE1", "PH2", "RU", "SG2", "TH2", "TR1", "TW2", "VN2"]
 session = setup_session()
 pool = ThreadPool(8)
 
