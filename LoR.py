@@ -6,7 +6,7 @@ from multiprocessing.pool import ThreadPool
 import subprocess
 
 session = setup_session()
-public_json = session.get("https://clientconfig.rpg.riotgames.com/api/v1/config/public?namespace=keystone.products.bacon.patchlines", timeout=1)
+public_json = session.get("https://clientconfig.rpg.riotgames.com/api/v1/config/public?namespace=keystone.products.bacon.patchlines", timeout=2)
 public_json.raise_for_status()
 version = json.loads(public_json.content)["keystone.products.bacon.patchlines.live"]["platforms"]["win"]["configurations"][0]["version"]
 url = json.loads(public_json.content)["keystone.products.bacon.patchlines.live"]["platforms"]["win"]["configurations"][0]["patch_url"]

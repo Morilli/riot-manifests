@@ -11,7 +11,7 @@ pool = ThreadPool(8)
 
 def update_versions(region):
     for OS in ["android", "ios", "macos", "windows"]:
-        releases = session.get(f"https://sieve.services.riotcdn.net/api/v1/products/lol/version-sets/{region}?q[platform]={OS}", timeout=1)
+        releases = session.get(f"https://sieve.services.riotcdn.net/api/v1/products/lol/version-sets/{region}?q[platform]={OS}", timeout=2)
         releases.raise_for_status()
 
         for release in json.loads(releases.content)["releases"]:
@@ -30,7 +30,7 @@ pool.map(update_versions, version_sets, 1)
 region_map = {"BR": "BR1", "EUNE": "EUN1", "EUW": "EUW1", "JP": "JP1", "KR": "KR", "LA1": "LA1", "LA2": "LA2", "ME1": "ME1", "NA": "NA1", "OC1": "OC1", "PH2": "PH2", "RU": "RU", "SG2": "SG2", "TH2": "TH2", "TR": "TR1", "TW2": "TW2", "VN2": "VN2", "PBE": "PBE1"}
 os_map = {"win": "windows", "mac": "macos"}
 
-client_releases = session.get("https://clientconfig.rpg.riotgames.com/api/v1/config/public?namespace=keystone.products.league_of_legends.patchlines", timeout=1)
+client_releases = session.get("https://clientconfig.rpg.riotgames.com/api/v1/config/public?namespace=keystone.products.league_of_legends.patchlines", timeout=2)
 client_releases.raise_for_status()
 
 configurations = []

@@ -8,7 +8,7 @@ patchlines = ["KeystoneFoundationLiveWin", "KeystoneFoundationBetaWin", "Keyston
 session = setup_session()
 
 for patchline in patchlines:
-    json_file = session.get(f"https://clientconfig.rpg.riotgames.com/api/v1/config/public?version=99.0.0.9999999&patchline={patchline}&app=Riot Client&namespace=keystone.self_update", timeout=1)
+    json_file = session.get(f"https://clientconfig.rpg.riotgames.com/api/v1/config/public?version=99.0.0.9999999&patchline={patchline}&app=Riot Client&namespace=keystone.self_update", timeout=2)
     json_file.raise_for_status()
 
     level = json.loads(json_file.content)["keystone.self_update.level"]

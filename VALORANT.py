@@ -19,7 +19,7 @@ def get_valorant_version(path):
 
 session = setup_session()
 
-valorant_release = session.get("https://clientconfig.rpg.riotgames.com/api/v1/config/public?namespace=keystone.products.valorant.patchlines", timeout=1)
+valorant_release = session.get("https://clientconfig.rpg.riotgames.com/api/v1/config/public?namespace=keystone.products.valorant.patchlines", timeout=2)
 
 configurations = [configuration for configuration in json.loads(valorant_release.content)["keystone.products.valorant.patchlines.live"]["platforms"]["win"]["configurations"]]
 os.makedirs("VALORANT/temp", exist_ok=True)
