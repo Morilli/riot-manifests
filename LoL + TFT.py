@@ -1,5 +1,4 @@
 from utils import get_exe_version, download_manifest, save_file, setup_session
-import json
 import plistlib
 import os
 from multiprocessing.pool import ThreadPool
@@ -14,7 +13,7 @@ def update_versions(region):
         releases = session.get(f"https://sieve.services.riotcdn.net/api/v1/products/lol/version-sets/{region}?q[platform]={OS}", timeout=2)
         releases.raise_for_status()
 
-        for release in json.loads(releases.content)["releases"]:
+        for release in releases.json()["releases"]:
             artifact_type_id = release["release"]["labels"]["riot:artifact_type_id"]["values"][0]
             path = f'{"LoL" if OS in {"macos", "windows"} else "TFT"}/{region}/{OS}/{artifact_type_id}'
             if artifact_type_id == "lol-standalone-client":
@@ -34,7 +33,7 @@ client_releases = session.get("https://clientconfig.rpg.riotgames.com/api/v1/con
 client_releases.raise_for_status()
 
 configurations = []
-for patchline in json.loads(client_releases.content).values():
+for patchline in client_releases.json().values():
     for platform in patchline["platforms"]:
         for configuration in patchline["platforms"][platform]["configurations"]:
             configurations.append((region_map[configuration["id"]], platform, configuration["patch_url"]))

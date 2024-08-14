@@ -2,7 +2,6 @@ import ssl
 from requests import Session
 from requests.adapters import HTTPAdapter
 import re
-import json
 import hachoir.parser
 import hachoir.metadata
 from hachoir.stream import FileInputStream
@@ -38,7 +37,7 @@ def get_lor_tokens(username, password, session=None) -> Tuple[str, str, str, str
         "redirect_uri": "http://localhost/redirect",
         "scope": "account openid"
     }
-    post_response = session.post("https://auth.riotgames.com/api/v1/authorization", json=post_payload, timeout=1)
+    post_response = session.post("https://auth.riotgames.com/api/v1/authorization", json=post_payload, timeout=2)
     post_response.raise_for_status()
 
     put_payload = {
@@ -52,7 +51,7 @@ def get_lor_tokens(username, password, session=None) -> Tuple[str, str, str, str
 
     entitlements_token_response = session.post("https://entitlements.auth.riotgames.com/api/token/v1", json={"urn": "urn:entitlement:%"}, headers={"Authorization": f"Bearer {access_token}"}, timeout=1)
     entitlements_token_response.raise_for_status()
-    entitlements_token = json.loads(entitlements_token_response.content)["entitlements_token"]
+    entitlements_token = entitlements_token_response.json()["entitlements_token"]
 
     userinfo_response = session.get("https://auth.riotgames.com/userinfo", headers={"Authorization": f"Bearer {access_token}"}, timeout=1)
     userinfo_response.raise_for_status()
@@ -60,7 +59,7 @@ def get_lor_tokens(username, password, session=None) -> Tuple[str, str, str, str
 
     pas_token_response = session.put("https://riot-geo.pas.si.riotgames.com/pas/v1/product/bacon", json={"id_token": id_token}, headers={"Authorization": f"Bearer {access_token}"}, timeout=1)
     pas_token_response.raise_for_status()
-    pas_token = json.loads(pas_token_response.content)["token"]
+    pas_token = pas_token_response.json()["token"]
 
     return (entitlements_token, access_token, id_token, userinfo, pas_token)
 
