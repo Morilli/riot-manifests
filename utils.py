@@ -78,7 +78,7 @@ def download_manifest(manifest_url, temp_path, session=None):
     if os.path.exists(manifest_path):
         return
 
-    manifest = session.get(manifest_url, timeout=2)
+    manifest = session.get(manifest_url, timeout=5)
     manifest.raise_for_status()
 
     with open(f"{manifest_path}.temp", "wb") as out_file:
