@@ -46,7 +46,7 @@ def get_lor_tokens(username, password, session=None) -> Tuple[str, str, str, str
         "username": username,
         "password": password
     }
-    put_response = session.put("https://auth.riotgames.com/api/v1/authorization", json=put_payload, timeout=2)
+    put_response = session.put("https://auth.riotgames.com/api/v1/authorization", json=put_payload, headers={"referer": "https://authenticate.riotgames.com/"}, timeout=2)
     put_response.raise_for_status()
     access_token, id_token = re.search("access_token=(.*)&scope=.*id_token=(.*)&token_type=", put_response.content.decode()).groups()
 
