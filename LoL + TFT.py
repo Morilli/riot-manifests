@@ -32,6 +32,7 @@ os_map = {"win": "windows", "mac": "macos"}
 client_releases = session.get("https://clientconfig.rpg.riotgames.com/api/v1/config/public?namespace=keystone.products.league_of_legends.patchlines", timeout=2)
 client_releases.raise_for_status()
 
+# (region_identifier, platform, patch_url)
 configurations = []
 for patchline in client_releases.json().values():
     for platform in patchline["platforms"]:

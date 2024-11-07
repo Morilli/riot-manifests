@@ -33,14 +33,18 @@ pool = ThreadPool(4)
 
 valorant_release = session.get("https://clientconfig.rpg.riotgames.com/api/v1/config/public?namespace=keystone.products.valorant.patchlines", timeout=2)
 
-configurations = [configuration for configuration in json.loads(valorant_release.content)["keystone.products.valorant.patchlines.live"]["platforms"]["win"]["configurations"]]
-os.makedirs("VALORANT/temp", exist_ok=True)
-pool.starmap(download_manifest, {(configuration["patch_url"], "VALORANT/temp", session) for configuration in configurations}, 1)
-
 region_order = {"na": 0, "br": 1, "latam": 2, "kr": 3, "ap": 4, "eu": 5} # the order they are updated in, to maximize cache efficiency when requesting files in order
-for configuration in sorted(configurations, key=lambda config: region_order[config["valid_shards"]["live"][0]]):
-    patch_url = configuration["patch_url"]
-    region = configuration["valid_shards"]["live"][0]
+ordered_configurations = sorted(valorant_release.json()["keystone.products.valorant.patchlines.live"]["platforms"]["win"]["configurations"], key=lambda config: region_order[config["valid_shards"]["live"][0]])
+
+# (region_identifier, patch_url)
+configurations = [(configuration["valid_shards"]["live"][0], configuration["patch_url"]) for configuration in ordered_configurations]
+
+os.makedirs("VALORANT/temp", exist_ok=True)
+pool.starmap(download_manifest, {(configuration[1], "VALORANT/temp", session) for configuration in configurations}, 1)
+
+for configuration in configurations:
+    region = configuration[0]
+    patch_url = configuration[1]
     os.makedirs(f"VALORANT/{region}", exist_ok=True)
     subprocess.check_call(["./ManifestDownloader.exe", f"VALORANT/temp/{patch_url[-25:]}", "-b", "https://valorant.secure.dyn.riotcdn.net/channels/public/bundles", "-f", "ShooterGame/Binaries/Win64/VALORANT-Win64-Shipping.exe", "-o", "VALORANT/temp", "-t", "8"], timeout=60)
     exe_version = get_valorant_version("VALORANT/temp/ShooterGame/Binaries/Win64/VALORANT-Win64-Shipping.exe")
