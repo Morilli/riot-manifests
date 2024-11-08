@@ -1,5 +1,4 @@
 from utils import download_manifest, save_file, setup_session
-import json
 import os
 import subprocess
 from multiprocessing.pool import ThreadPool
