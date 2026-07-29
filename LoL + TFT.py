@@ -5,6 +5,7 @@ from multiprocessing.pool import ThreadPool
 import subprocess
 
 version_sets = ["BR1", "EUN1", "EUW1", "JP1", "KR", "LA1", "LA2", "ME1", "NA1", "OC1", "PBE1", "PH2", "RU", "SG2", "TH2", "TR1", "TW2", "VN2"]
+tft_version_sets = ["pbe-global"]
 session = setup_session()
 pool = ThreadPool(8)
 
@@ -25,6 +26,20 @@ def update_versions(region):
             save_file(f'{path}/{release["release"]["labels"]["riot:artifact_version_id"]["values"][0].split("+")[0]}.txt', release["download"]["url"])
 
 pool.map(update_versions, version_sets, 1)
+
+def update_tft_versions(region):
+    for OS in ["android", "ios", "macos", "windows"]:
+        releases = session.get(f"https://sieve.services.riotcdn.net/api/v1/products/teamfighttactics/version-sets/{region}?q[platform]={OS}", timeout=2)
+        releases.raise_for_status()
+
+        for release in releases.json()["releases"]:
+            artifact_type_id = release["release"]["labels"]["riot:artifact_type_id"]["values"][0]
+            path = f'TFT/{region}/{OS}/{artifact_type_id}'
+
+            os.makedirs(path, exist_ok=True)
+            save_file(f'{path}/{release["release"]["labels"]["Stream"]["values"][0]}.{release["release"]["labels"]["riot:revision"]["values"][0]}.txt', release["download"]["url"])
+
+pool.map(update_tft_versions, tft_version_sets, 1)
 
 region_map = {"BR": "BR1", "EUNE": "EUN1", "EUW": "EUW1", "JP": "JP1", "KR": "KR", "LA1": "LA1", "LA2": "LA2", "ME1": "ME1", "NA": "NA1", "OC1": "OC1", "PH2": "PH2", "RU": "RU", "SG2": "SG2", "TH2": "TH2", "TR": "TR1", "TW2": "TW2", "VN2": "VN2", "PBE": "PBE1"}
 os_map = {"win": "windows", "mac": "macos"}
