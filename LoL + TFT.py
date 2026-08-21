@@ -5,7 +5,7 @@ from multiprocessing.pool import ThreadPool
 import subprocess
 
 version_sets = ["BR1", "EUN1", "EUW1", "JP1", "KR", "LA1", "LA2", "ME1", "NA1", "OC1", "PBE1", "PH2", "RU", "SG2", "TH2", "TR1", "TW2", "VN2"]
-tft_version_sets = ["pbe-global"]
+tft_version_sets = ["live-BR1", "live-EUN1", "live-EUW1", "live-JP1", "live-KR", "live-LA1", "live-LA2", "live-ME1", "live-NA1", "live-OC1", "live-RU", "live-SG2", "live-TR1", "live-TW2", "live-VN2", "pbe-global"]
 session = setup_session()
 pool = ThreadPool(8)
 
